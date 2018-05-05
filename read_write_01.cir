@@ -16,11 +16,11 @@ Read/Write Memristor - PNSM approach
 .param Roff normal(200k,0.1)
 
 * 4 - Declaration of rest static values
-.param 
-+ Ron=1K 
-+ uv=1e-7 
+.param
++ Ron=1K
++ uv=1e-7
 + D=3n
-+ k={uv*Ron/D**2} 
++ k={uv*Ron/D**2}
 + deltaR={Roff-Ron}
 + p=10
 + x0=0.7
@@ -28,7 +28,7 @@ Read/Write Memristor - PNSM approach
 
 * 5 - Memristor Helper Functions
 
-* 5.1 - Map of Prodromakis window. 
+* 5.1 - Map of Prodromakis window.
 * p = 10 | X to q state maps
 
 .func FIp10(q)={TABLE(q,
@@ -117,6 +117,6 @@ XU2 Y BLP MEMRISTOR_PNSM
 .model PMOS PMOS
 .lib C:\Program Files\LTC\LTspiceXVII\lib\cmp\standard.mos
 .tran 0 90n 0 .1n uic
-.include 45nm_HP.pm
+.include 45nm_NMOS_bulk30311_25.pm
 .backanno
 .end

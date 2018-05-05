@@ -70,20 +70,20 @@ Per .tran options, skipping operating point for transient analysis.
 .step run=15 blpw=4.5e-007
 .step run=16 blpw=4.5e-007
 
-Date: Sat May 05 23:25:15 2018
-Total elapsed time: 5.657 seconds.
+Date: Sun May 06 03:00:16 2018
+Total elapsed time: 3.860 seconds.
 
 tnom = 27
 temp = 27
 method = modified trap
-totiter = 2939
-traniter = 2939
-tranpoints = 1154
-accept = 1149
-rejected = 5
+totiter = 2996
+traniter = 2996
+tranpoints = 1152
+accept = 1148
+rejected = 4
 matrix size = 30
 fillins = 4
 solver = Normal
-Matrix Compiler1: 1.63 KB object code size  0.5/0.3/[0.1]
-Matrix Compiler2: 2.56 KB object code size  0.3/0.3/[0.1]
+Matrix Compiler1: 1.63 KB object code size  0.4/0.2/[0.1]
+Matrix Compiler2: 2.56 KB object code size  0.3/0.3/[0.2]
 
