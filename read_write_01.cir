@@ -1,18 +1,36 @@
-HP memristor - PNSM approach
+Read/Write Memristor - PNSM approach
+
+* 1 - Monte Carlo - X Point
+
+* 1.1 - No. of steps to execute
 .step param run 0 16 1
 .param y=17
 
+* 1.2 - Gaussian Normal distribution to input value with tolerance
 .function normal(nom,tol) if(run==16, nom, nom*(1+gauss(tol)))
 
+* 2 - Vary width of memristor by steps
 .step param blpw list 180n 270n 360n 450n
+
+* 3 - Vary Roff as part of Monte Carlo Simulation
 .param Roff normal(200k,0.1)
-.param Ron=1K uv=1e-7 D=3n
-+ k={uv*Ron/D**2} deltaR={Roff-Ron} p=10
-.param x0=0.7 a=50
-*
-*X to q state maps
-*
-*Map of Prodromakis window, p = 10
+
+* 4 - Declaration of rest static values
+.param 
++ Ron=1K 
++ uv=1e-7 
++ D=3n
++ k={uv*Ron/D**2} 
++ deltaR={Roff-Ron}
++ p=10
++ x0=0.7
++ a=50
+
+* 5 - Memristor Helper Functions
+
+* 5.1 - Map of Prodromakis window. 
+* p = 10 | X to q state maps
+
 .func FIp10(q)={TABLE(q,
 + -1.5, 2.390u,
 + -1.4, 6.897u,
@@ -45,48 +63,59 @@ HP memristor - PNSM approach
 + 1.3, 999.980m,
 + 1.4, 999.993m,
 + 1.5, 999.998m)}
-*
-*Map of rectangular window
+
+* 5.2 Map of Rectangular Window
 .func FIrect(q)={TABLE(q,-1,0,1,1)}
-*
-*Universal map - sigmoidal approximation
+
+
+* 5.3 Universal Map - Sigmoidal Approximation
 .func FIsygm(q)=
 +{1/a*log((1+exp(a*(q+0.5)))/(1+exp(a*(q-0.5))))}
-*
-*novel memristor models employing PNSM
-*
+
+* 5.4 Novel Memristor Models Employing PNSM
+
 .subckt MEMRISTOR_PNSM 1 2
 Roff 1 aux {Roff}
 Er aux 2 value={-deltaR*v(x)*I(Er)}
 Gq 0 q value={I(Er)}
 Cint q 0 1
 Raux q 0 1T
-*replace FIp10 in the two lines below
-*by FIrect or FIsygm if applicable
-Eq0 q0 0 value={FIp10(v(q0))-x0+v(q0)};OP comput.
+
+* 5.5 Replace FIp10 in the two lines below by FIrect or FIsygm if applicable
+
+Eq0 q0 0 value={FIp10(v(q0))-x0+v(q0)}
 Ex x 0 value={FIp10(k*v(q)+v(q0))}
 .ends MEMRISTOR_PNSM
-* C:\Users\Sakib\Desktop\TVLSI-SPECIAL EDITION\1. POLARITY CORRECTED\write10patternandsuccessive read.asc
+
+* 6 - Begin building the circuit
+
 M1 BLP WL X 0 NMOS l=45n w=blpw
+
 V§BL BL 0 PWL (0 0 19.99n 0 20n 1 69.99n 1 70n 0 79.999n 0 80n 1 80.5n 1 80.51n 0 80.99n 0 81n 1 81.5n
 +1 81.51n 0 81.99n 0 82n 1 82.5n 1 82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
 +83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1 86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0)
+
 V1 BLP 0 PWL(0 1 19.99n 1 20n 0 79.999n 0 80n 1 80.5n 1 80.51n 0
 +80.51n 0 80.99n 0 81n 1 81.5n 1 81.51n 0 81.99n 0 82n 1 82.5n 1
 +82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
 +83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1
 +86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0 )
+
 V3 WL 0 PWL(0 1 69.99n 1 70n 0 79.999n 0 80n 1 80.5n 1 80.51n 0
 +80.51n 0 80.99n 0 81n 1 81.5n 1 81.51n 0 81.99n 0 82n 1 82.5n 1
 +82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
 +83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1
 +86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0 )
+
 M2 BL WL Y 0 NMOS l=45n w=280n
 XU1 X BL MEMRISTOR_PNSM
 XU2 Y BLP MEMRISTOR_PNSM
+
+* 7 - Import libs
+
 .model NMOS NMOS
 .model PMOS PMOS
-.lib C:\PROGRA~1\LTC\LTSPIC~2\lib\cmp\standard.mos
+.lib C:\Program Files\LTC\LTspiceXVII\lib\cmp\standard.mos
 .tran 0 90n 0 .1n uic
 .include 45nm_HP.pm
 .backanno
