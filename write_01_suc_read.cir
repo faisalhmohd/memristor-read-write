@@ -1,0 +1,93 @@
+HP memristor - PNSM approach
+.step param run 0 16 1
+.param y=17
+
+.function normal(nom,tol) if(run==16, nom, nom*(1+gauss(tol)))
+
+.step param blpw list 180n 270n 360n 450n
+.param Roff normal(200k,0.1)
+.param Ron=1K uv=1e-7 D=3n
++ k={uv*Ron/D**2} deltaR={Roff-Ron} p=10
+.param x0=0.7 a=50
+*
+*X to q state maps
+*
+*Map of Prodromakis window, p = 10
+.func FIp10(q)={TABLE(q,
++ -1.5, 2.390u,
++ -1.4, 6.897u,
++ -1.3, 19.911u,
++ -1.2, 57.465u,
++ -1.1, 165.908u,
++ -1, 478.047u,
++ -0.9, 1.374m,
++ -0.8, 3.912m,
++ -0.7, 10.871m,
++ -0.6, 28.404m,
++ -0.5, 65.685m,
++ -0.4, 127.779m,
++ -0.3, 209.592m,
++ -0.2, 302.423m,
++ -0.1, 400.274m,
++ 0, 500.000m,
++ 0.1, 599.723m,
++ 0.2, 697.574m,
++ 0.3, 790.405m,
++ 0.4, 872.219m,
++ 0.5, 974.314m,
++ 0.6, 971.595m,
++ 0.7, 989.129m,
++ 0.8, 996.088m,
++ 0.9, 998.626m,
++ 1, 999.522m,
++ 1.1, 999.834m,
++ 1.2, 999.943m,
++ 1.3, 999.980m,
++ 1.4, 999.993m,
++ 1.5, 999.998m)}
+*
+*Map of rectangular window
+.func FIrect(q)={TABLE(q,-1,0,1,1)}
+*
+*Universal map - sigmoidal approximation
+.func FIsygm(q)=
++{1/a*log((1+exp(a*(q+0.5)))/(1+exp(a*(q-0.5))))}
+*
+*novel memristor models employing PNSM
+*
+.subckt MEMRISTOR_PNSM 1 2
+Roff 1 aux {Roff}
+Er aux 2 value={-deltaR*v(x)*I(Er)}
+Gq 0 q value={I(Er)}
+Cint q 0 1
+Raux q 0 1T
+*replace FIp10 in the two lines below
+*by FIrect or FIsygm if applicable
+Eq0 q0 0 value={FIp10(v(q0))-x0+v(q0)};OP comput.
+Ex x 0 value={FIp10(k*v(q)+v(q0))}
+.ends MEMRISTOR_PNSM
+* C:\Users\Sakib\Desktop\TVLSI-SPECIAL EDITION\1. POLARITY CORRECTED\write10patternandsuccessive read.asc
+M1 BLP WL X 0 NMOS l=45n w=blpw
+V§BL BL 0 PWL (0 0 19.99n 0 20n 1 69.99n 1 70n 0 79.999n 0 80n 1 80.5n 1 80.51n 0 80.99n 0 81n 1 81.5n
++1 81.51n 0 81.99n 0 82n 1 82.5n 1 82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
++83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1 86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0)
+V1 BLP 0 PWL(0 1 19.99n 1 20n 0 79.999n 0 80n 1 80.5n 1 80.51n 0
++80.51n 0 80.99n 0 81n 1 81.5n 1 81.51n 0 81.99n 0 82n 1 82.5n 1
++82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
++83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1
++86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0 )
+V3 WL 0 PWL(0 1 69.99n 1 70n 0 79.999n 0 80n 1 80.5n 1 80.51n 0
++80.51n 0 80.99n 0 81n 1 81.5n 1 81.51n 0 81.99n 0 82n 1 82.5n 1
++82.51n 0 82.99n 0 83n 1 83.5n 1 83.51n 0
++83.99n 0 84n 1 84.5n 1 84.51n 0 84.99n 0 85n 1 85.5n 1 85.51n 0 85.99n 0 86n 1
++86.5n 1 86.51n 0 86.99n 0 87n 1 87.5n 1 87.51n 0 87.99n 0 88n 1 88.5n 1 88.51n 0 88.99n 0 89n 1 89.5n 1 89.51n 0 )
+M2 BL WL Y 0 NMOS l=45n w=280n
+XU1 X BL MEMRISTOR_PNSM
+XU2 Y BLP MEMRISTOR_PNSM
+.model NMOS NMOS
+.model PMOS PMOS
+.lib C:\PROGRA~1\LTC\LTSPIC~2\lib\cmp\standard.mos
+.tran 0 90n 0 .1n uic
+.include 45nm_HP.pm
+.backanno
+.end
