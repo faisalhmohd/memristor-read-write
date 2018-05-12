@@ -111,13 +111,17 @@ M2 BL WL Y 0 NMOS l=45n w=280n
 XU1 X BL MEMRISTOR_PNSM
 XU2 Y BLP MEMRISTOR_PNSM
 
-* 7 - Import libs
+* 7 - Measure Read Time and Write Time
+
+.meas tran readtime find (v(x)-v(bl))/ix(u1:2) at=80.05ns
+.meas tran writetime find (v(x)-v(bl))/ix(u1:2) at=58ns
+
+* 8 - Import libs
 
 .model NMOS NMOS
 .model PMOS PMOS
 .lib /Applications/LTspice.app/Contents/lib/cmp/standard.mos
 .tran 0 90n 0 .1n uic
-.meas tran result find (V(x)-V(bl))/Ix(u1:2) at = T
-.include 45nm_NMOS_bulk30311_25.pm
+.include {{filename}}
 .backanno
 .end
