@@ -1,2 +1,8 @@
 *.log
 *.raw
+*.pyc
+
+# Ignore all cir files except main ones
+*.cir
+!read_write_01_template.cir
+!read_write_01.cir
