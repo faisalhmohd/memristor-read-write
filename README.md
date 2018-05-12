@@ -8,6 +8,8 @@ This repo generates output for inverter circuit using FinFET models provided by 
 
 ## Instructions
 
+For single files
+
 ```bash
 # Run single file
 {path-to-exec} -Run -b read_write_01.cir
@@ -17,6 +19,18 @@ This repo generates output for inverter circuit using FinFET models provided by 
 
 # OSX
 $ /Applications/LTspice.app/Contents/MacOS/LTspice -Run -b read_write_01.cir
+```
+
+For all libs
+
+```bash
+$ python vth-variation.py
+```
+
+## Prequisites
+
+```
+$ pip install numpy
 ```
 
 ## Equations to plot
